@@ -1,64 +1,84 @@
-<div class="flex-1 bg-pink-100
-min-h-screen flex items-center justify-center overflow-hidden">
-    <div id="stars" class="fixed inset-0">
-      <!-- Ici vous pourriez ajouter une animation d'étoiles avec CSS -->
+<div class="quiz-container">
+    <div *ngIf="loading" class="loading">
+      Chargement des questions...
     </div>
-   
-    <div class="relative z-10 text-center  flex-col items-center justify-center w-full px-4">
-      <h1 class="text-5xl md:text-8xl font-bold text-white mb-4 space-animation">
-        <span class="hh text-pink-900">Let's Quiz!</span>
-      </h1>
-      <p class="text-xl text-pink-700 mb-8">Every question is a new challenge!</p>
-  
+    
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+    
+    <div *ngIf="!loading && !error && questions.length === 0" class="category-selection">
+      <h2>Sélectionnez une catégorie et un niveau</h2>
+      
       <div class="hhhh max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
-        <!-- Carte 1 -->
+        <!-- Carte Culture Générale -->
         <div class="w-full max-w-sm mx-auto h-full flex flex-col rounded-lg transform transition-transform hover:scale-105">
           <div class="relative top-6 pt-6 px-8 z-10">
             <img class="w-[10rem] h-[10rem] mx-auto object-cover rounded-full outline outline-[0.5rem] outline-pink-900 shadow-lg shadow-pink-100" 
-                 src="images/CU.jpg" 
-                 alt="Planet Selection" />
+                 src="assets/images/CU.jpg" 
+                 alt="Culture Générale" />
           </div>
           <div class="w-full flex flex-col gap-4 rounded-xl bg-white backdrop-blur-sm pt-16 px-6 pb-6 border border-pink-900">
             <h2 class="text-center text-pink-700 sm:text-xl text-2xl font-display">Culture Générale</h2>
             <div class="w-full flex justify-between gap-2 pt-2 pb-4">
-              <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 1</button>
-              <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 2</button>
-              <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-blue-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 3</button>
+              <button (click)="loadCultureGenerale(1)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 1</button>
+              <button (click)="loadCultureGenerale(2)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 2</button>
+              <button (click)="loadCultureGenerale(3)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 3</button>
             </div>
           </div>
         </div>
-      
-        <!-- Carte 2 -->
+        
+        <!-- Carte Informatique -->
         <div class="w-full max-w-sm mx-auto h-full flex flex-col rounded-lg transform transition-transform hover:scale-105">
           <div class="relative top-6 pt-6 px-8 z-10">
             <img class="w-[10rem] h-[10rem] mx-auto object-cover rounded-full outline outline-[0.5rem] outline-pink-900 shadow-lg shadow-pink-100" 
-                 src="images/INF.jpg" 
-                 alt="Spaceship Selection" />
+                 src="assets/images/INF.jpg" 
+                 alt="Informatique" />
           </div>
           <div class="w-full flex flex-col gap-4 rounded-xl bg-white backdrop-blur-sm pt-16 px-6 pb-6 border border-pink-900">
-            <h2 class="text-center text-pink-700 sm:text-xl text-2xl font-display">Culture Générale</h2>
+            <h2 class="text-center text-pink-700 sm:text-xl text-2xl font-display">Informatique</h2>
             <div class="w-full flex justify-between gap-2 pt-2 pb-4">
-                <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 1</button>
-                <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 2</button>
-                <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-blue-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 3</button>
-             </div>
+              <button (click)="loadInformatique(1)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 1</button>
+              <button (click)="loadInformatique(2)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 2</button>
+              <button (click)="loadInformatique(3)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 3</button>
+            </div>
           </div>
         </div>
-      
-        <!-- Carte 3 -->
+        
+        <!-- Carte Sport -->
         <div class="w-full max-w-sm mx-auto h-full flex flex-col rounded-lg transform transition-transform hover:scale-105">
           <div class="relative top-6 pt-6 px-8 z-10">
             <img class="w-[10rem] h-[10rem] mx-auto object-cover rounded-full outline outline-[0.5rem] outline-pink-900 shadow-lg shadow-pink-100" 
-                 src="images/SPORT.jpg" 
-                 alt="Mission Type" />
+                 src="assets/images/SPORT.jpg" 
+                 alt="Sport" />
           </div>
           <div class="w-full flex flex-col gap-4 rounded-xl bg-white backdrop-blur-sm pt-16 px-6 pb-6 border border-pink-900">
-            <h2 class="text-center text-pink-700 sm:text-xl text-2xl font-display">Culture Générale</h2>
+            <h2 class="text-center text-pink-700 sm:text-xl text-2xl font-display">Sport</h2>
             <div class="w-full flex justify-between gap-2 pt-2 pb-4">
-                <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 1</button>
-                <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 2</button>
-                <button class="flex-1 py-2 px-2 bg-pink-900 hover:bg-blue-pink-900 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md shadow-pink">Level 3</button> </div>
+              <button (click)="loadSport(1)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 1</button>
+              <button (click)="loadSport(2)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 2</button>
+              <button (click)="loadSport(3)" class="flex-1 py-2 px-2 bg-pink-900 hover:bg-pink-800 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md">Level 3</button>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    
+    <!-- Affichage des questions -->
+    <div *ngIf="!loading && !error && questions.length > 0" class="questions-container">
+      <h2>Questions</h2>
+      <button (click)="questions = []" class="back-button">Retour aux catégories</button>
       
+      <div *ngFor="let question of questions; let i = index" class="question-card">
+        <h3>Question {{ i + 1 }}</h3>
+        <p [innerHTML]="question.question"></p>
+        
+        <div class="options">
+          <div class="option" *ngFor="let answer of [question.correct_answer, ...question.incorrect_answers]">
+            <input type="radio" [id]="'q' + i + '_' + answer" [name]="'question' + i" [value]="answer">
+            <label [for]="'q' + i + '_' + answer" [innerHTML]="answer"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

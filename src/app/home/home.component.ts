@@ -1,5 +1,20 @@
 // home.component.ts
 import { Component, OnInit } from '@angular/core';
+import { TriviaService } from './../'; // Assurez-vous que ce chemin est correct
+
+interface TriviaQuestion {
+  category: string;
+  type: string;
+  difficulty: string;
+  question: string;
+  correct_answer: string;
+  incorrect_answers: string[];
+}
+
+interface TriviaResponse {
+  response_code: number;
+  results: TriviaQuestion[];
+}
 
 @Component({
   selector: 'app-home',
@@ -7,48 +22,76 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  
-  constructor() { }
-  
+  questions: TriviaQuestion[] = [];
+  loading = false;
+  error = '';
+  selectedCategory = 9; // Par défaut: Culture Générale
+  selectedDifficulty = 'easy'; // Par défaut: Level 1
+
+  constructor(private triviaService: TriviaService) { }
+
   ngOnInit(): void {
-    this.createStars();
-    this.createMeteors();
-    this.setupSpaceKeyEasterEgg();
   }
-  
-  createStars(): void {
-    const starsContainer = document.getElementById('stars');
-    if (!starsContainer) return;
+
+  // Méthode pour charger les questions selon la catégorie et la difficulté
+  loadQuestions(category: number, difficulty: string): void {
+    this.loading = true;
+    this.error = '';
+    this.questions = [];
     
-    for (let i = 0; i < 100; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      star.style.left = `${Math.random() * 100}%`;
-      star.style.top = `${Math.random() * 100}%`;
-      star.style.width = `${Math.random() * 3}px`;
-      star.style.height = star.style.width;
-      star.style.setProperty('--duration', `${Math.random() * 3 + 1}s`);
-      starsContainer.appendChild(star);
-    }
-  }
-  
-  createMeteors(): void {
-    setInterval(() => {
-      const meteor = document.createElement('div');
-      meteor.className = 'meteor';
-      meteor.style.top = `${Math.random() * 100}%`;
-      meteor.style.left = '100%';
-      document.body.appendChild(meteor);
-      setTimeout(() => meteor.remove(), 2000);
-    }, 3000);
-  }
-  
-  setupSpaceKeyEasterEgg(): void {
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        document.body.style.background = `hsl(${Math.random() * 360}, 50%, 15%)`;
-        setTimeout(() => document.body.style.background = '', 500);
+    const difficultyMapping: { [key: string]: string } = {
+      'level1': 'easy',
+      'level2': 'medium',
+      'level3': 'hard'
+    };
+    
+    const apiDifficulty = difficultyMapping[difficulty] || 'easy';
+    
+    this.triviaService.getQuestions(10, category, apiDifficulty).subscribe({
+      next: (response: TriviaResponse) => {
+        if (response.response_code === 0) {
+          this.questions = response.results;
+          // Décodage des caractères HTML dans les questions et réponses
+          this.questions.forEach(q => {
+            q.question = this.decodeHtmlEntities(q.question);
+            q.correct_answer = this.decodeHtmlEntities(q.correct_answer);
+            q.incorrect_answers = q.incorrect_answers.map(a => this.decodeHtmlEntities(a));
+          });
+        } else {
+          this.error = 'Erreur lors du chargement des questions (code ' + response.response_code + ')';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Erreur de connexion à l\'API';
+        this.loading = false;
+        console.error(err);
       }
     });
+  }
+
+  // Méthode pour charger les questions de Culture Générale
+  loadCultureGenerale(level: number): void {
+    const difficulty = level === 1 ? 'easy' : level === 2 ? 'medium' : 'hard';
+    this.loadQuestions(9, difficulty);
+  }
+
+  // Méthode pour charger les questions d'Informatique
+  loadInformatique(level: number): void {
+    const difficulty = level === 1 ? 'easy' : level === 2 ? 'medium' : 'hard';
+    this.loadQuestions(18, difficulty);
+  }
+
+  // Méthode pour charger les questions de Sport
+  loadSport(level: number): void {
+    const difficulty = level === 1 ? 'easy' : level === 2 ? 'medium' : 'hard';
+    this.loadQuestions(21, difficulty);
+  }
+
+  // Utilitaire pour décoder les caractères HTML
+  private decodeHtmlEntities(text: string): string {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
   }
 }
